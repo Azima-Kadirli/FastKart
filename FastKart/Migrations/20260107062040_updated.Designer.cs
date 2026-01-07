@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FastKart.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260106084839_initial")]
-    partial class initial
+    [Migration("20260107062040_updated")]
+    partial class updated
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

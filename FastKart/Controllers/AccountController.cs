@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FastKart.Controllers
 {
-    public class AccountController(UserManager<AppUser>_userManager,SignInManager<AppUser>_signManager) : Controller
+    public class AccountController(UserManager<AppUser> _userManager, SignInManager<AppUser> _signManager,RoleManager<IdentityRole>_roleManager) : Controller
     {
 
         [HttpGet]
@@ -41,17 +41,18 @@ namespace FastKart.Controllers
                 UserName = vm.UserName,
             };
 
-            var result = await _userManager.CreateAsync(user,vm.Password);
+            var result = await _userManager.CreateAsync(user, vm.Password);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
+
                 return View(vm);
             }
 
-            return Ok("Ok");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -61,16 +62,52 @@ namespace FastKart.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginVM vm)
+        public async Task<IActionResult> Login(LoginVM vm)
         {
             if (!ModelState.IsValid)
             {
                 return View(vm);
             }
-            var existUser = 
 
+            var existUser = await _userManager.FindByEmailAsync(vm.EmailAddress);
+            if (existUser is null)
+            {
+                ModelState.AddModelError("", "Email or Username is incorrect");
+                return View(vm);
+            }
 
-            return View();
+            var loginResult = await _userManager.CheckPasswordAsync(existUser, vm.Password);
+            if (!loginResult)
+            {
+                ModelState.AddModelError("", "Email or Username is incorrect");
+                return View(vm);
+            }
+
+            await _signManager.SignInAsync(existUser, vm.IsRemember);
+            return RedirectToAction("Index", "Home");
         }
-    }
+
+        public async Task<IActionResult> Logout()
+        {
+            await  _signManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> CreateRoles()
+        {
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+                Name = "User"
+            });
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+                Name = "Admin"
+            });
+            await _roleManager.CreateAsync(new IdentityRole()
+            {
+                Name = "Moderator"
+            });
+            return Ok("Roles were created");
+        }
+}
 }

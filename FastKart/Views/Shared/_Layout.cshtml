@@ -317,18 +317,32 @@
 
                                         <div class="onhover-div onhover-div-login">
                                             <ul class="user-box-name">
-                                                <li class="product-box-contain">
-                                                    <i></i>
-                                                    <a href="login.html">Log In</a>
-                                                </li>
-
-                                                <li class="product-box-contain">
-                                                    <a asp-controller ="Account" asp-action="Register">Register</a>
-                                                </li>
-
-                                                <li class="product-box-contain">
-                                                    <a href="forgot.html">Forgot Password</a>
-                                                </li>
+                                                @if (User?.Identity?.IsAuthenticated ?? false)
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyAccount">
+                                                            @User.Identity.Name
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" asp-controller="Account" asp-action="Logout">
+                                                            Logout
+                                                        </a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item" asp-controller="Account" asp-action="Login">
+                                                            Login
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" asp-controller="Account" asp-action="Register">
+                                                            Register
+                                                        </a>
+                                                    </li>
+                                                }
                                             </ul>
                                         </div>
                                     </li>
