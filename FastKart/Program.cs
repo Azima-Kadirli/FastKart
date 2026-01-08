@@ -1,5 +1,7 @@
+using FastKart.Abstraction;
 using FastKart.Context;
 using FastKart.Models;
+using FastKart.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,6 +34,7 @@ namespace FastKart
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(5);
             }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             var app = builder.Build();
 
